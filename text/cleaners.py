@@ -13,10 +13,14 @@ hyperparameter. Some cleaners are English-specific. You'll typically want to use
 '''
 
 import re
+import pypinyin as p
+# import quan_ban as qb
+import unicodedata
 from unidecode import unidecode
 from .numbers import normalize_numbers
-import pyopenjtalk
-from janome.tokenizer import Tokenizer
+
+# import pyopenjtalk
+# from janome.tokenizer import Tokenizer
 
 
 # Regular expression matching whitespace:
@@ -44,15 +48,15 @@ _abbreviations = [(re.compile('\\b%s\\.' % x[0], re.IGNORECASE), x[1]) for x in 
   ('ft', 'fort'),
 ]]
 
-# Regular expression matching Japanese without punctuation marks:
-_japanese_characters = re.compile(r'[A-Za-z\d\u3005\u3040-\u30ff\u4e00-\u9fff\uff11-\uff19\uff21-\uff3a\uff41-\uff5a\uff66-\uff9d]')
-
-# Regular expression matching non-Japanese characters or punctuation marks:
-_japanese_marks = re.compile(r'[^A-Za-z\d\u3005\u3040-\u30ff\u4e00-\u9fff\uff11-\uff19\uff21-\uff3a\uff41-\uff5a\uff66-\uff9d]')
+# # Regular expression matching Japanese without punctuation marks:
+# _japanese_characters = re.compile(r'[A-Za-z\d\u3005\u3040-\u30ff\u4e00-\u9fff\uff11-\uff19\uff21-\uff3a\uff41-\uff5a\uff66-\uff9d]')
+#
+# # Regular expression matching non-Japanese characters or punctuation marks:
+# _japanese_marks = re.compile(r'[^A-Za-z\d\u3005\u3040-\u30ff\u4e00-\u9fff\uff11-\uff19\uff21-\uff3a\uff41-\uff5a\uff66-\uff9d]')
 
 
 # Tokenizer for Japanese
-tokenizer = Tokenizer()
+# tokenizer = Tokenizer()
 
 
 def expand_abbreviations(text):
@@ -102,114 +106,135 @@ def english_cleaners(text):
   return text
 
 
-def japanese_cleaners(text):
-  '''Pipeline for Japanese text.'''
-  sentences = re.split(_japanese_marks, text)
-  marks = re.findall(_japanese_marks, text)
-  text = ''
-  for i, mark in enumerate(marks):
-    if re.match(_japanese_characters, sentences[i]):
-      text += pyopenjtalk.g2p(sentences[i], kana=False).replace('pau','').replace(' ','')
-    text += unidecode(mark).replace(' ','')
-  if re.match(_japanese_characters, sentences[-1]):
-      text += pyopenjtalk.g2p(sentences[-1], kana=False).replace('pau','').replace(' ','')
-  if re.match('[A-Za-z]',text[-1]):
-    text += '.'
+# def japanese_cleaners(text):
+#   '''Pipeline for Japanese text.'''
+#   sentences = re.split(_japanese_marks, text)
+#   marks = re.findall(_japanese_marks, text)
+#   text = ''
+#   for i, mark in enumerate(marks):
+#     if re.match(_japanese_characters, sentences[i]):
+#       text += pyopenjtalk.g2p(sentences[i], kana=False).replace('pau','').replace(' ','')
+#     text += unidecode(mark).replace(' ','')
+#   if re.match(_japanese_characters, sentences[-1]):
+#       text += pyopenjtalk.g2p(sentences[-1], kana=False).replace('pau','').replace(' ','')
+#   if re.match('[A-Za-z]',text[-1]):
+#     text += '.'
+#   return text
+
+
+# def japanese_tokenization_cleaners(text):
+#   '''Pipeline for tokenizing Japanese text.'''
+#   words = []
+#   for token in tokenizer.tokenize(text):
+#     if token.phonetic!='*':
+#       words.append(token.phonetic)
+#     else:
+#       words.append(token.surface)
+#   text = ''
+#   for word in words:
+#     if re.match(_japanese_characters, word):
+#       if word[0] == '\u30fc':
+#         continue
+#       if len(text)>0:
+#         text += ' '
+#       text += pyopenjtalk.g2p(word, kana=False).replace(' ','')
+#     else:
+#       text += unidecode(word).replace(' ','')
+#   if re.match('[A-Za-z]',text[-1]):
+#     text += '.'
+#   return text
+
+
+# def japanese_accent_cleaners(text):
+#   '''Pipeline for notating accent in Japanese text.'''
+#   '''Reference https://r9y9.github.io/ttslearn/latest/notebooks/ch10_Recipe-Tacotron.html'''
+#   sentences = re.split(_japanese_marks, text)
+#   marks = re.findall(_japanese_marks, text)
+#   text = ''
+#   for i, sentence in enumerate(sentences):
+#     if re.match(_japanese_characters, sentence):
+#       text += ':'
+#       labels = pyopenjtalk.extract_fullcontext(sentence)
+#       for n, label in enumerate(labels):
+#         phoneme = re.search(r'\-([^\+]*)\+', label).group(1)
+#         if phoneme not in ['sil','pau']:
+#           text += phoneme
+#         else:
+#           continue
+#         n_moras = int(re.search(r'/F:(\d+)_', label).group(1))
+#         a1 = int(re.search(r"/A:(\-?[0-9]+)\+", label).group(1))
+#         a2 = int(re.search(r"\+(\d+)\+", label).group(1))
+#         a3 = int(re.search(r"\+(\d+)/", label).group(1))
+#         if re.search(r'\-([^\+]*)\+', labels[n + 1]).group(1) in ['sil','pau']:
+#           a2_next=-1
+#         else:
+#           a2_next = int(re.search(r"\+(\d+)\+", labels[n + 1]).group(1))
+#         # Accent phrase boundary
+#         if a3 == 1 and a2_next == 1:
+#           text += ' '
+#         # Falling
+#         elif a1 == 0 and a2_next == a2 + 1 and a2 != n_moras:
+#           text += ')'
+#         # Rising
+#         elif a2 == 1 and a2_next == 2:
+#           text += '('
+#     if i<len(marks):
+#       text += unidecode(marks[i]).replace(' ','')
+#   if re.match('[A-Za-z]',text[-1]):
+#     text += '.'
+#   return text
+
+
+# def japanese_phrase_cleaners(text):
+#   '''Pipeline for dividing Japanese text into phrases.'''
+#   sentences = re.split(_japanese_marks, text)
+#   marks = re.findall(_japanese_marks, text)
+#   text = ''
+#   for i, sentence in enumerate(sentences):
+#     if re.match(_japanese_characters, sentence):
+#       if text != '':
+#         text += ' '
+#       labels = pyopenjtalk.extract_fullcontext(sentence)
+#       for n, label in enumerate(labels):
+#         phoneme = re.search(r'\-([^\+]*)\+', label).group(1)
+#         if phoneme not in ['sil','pau']:
+#           text += phoneme
+#         else:
+#           continue
+#         a3 = int(re.search(r"\+(\d+)/", label).group(1))
+#         if re.search(r'\-([^\+]*)\+', labels[n + 1]).group(1) in ['sil','pau']:
+#           a2_next=-1
+#         else:
+#           a2_next = int(re.search(r"\+(\d+)\+", labels[n + 1]).group(1))
+#         # Accent phrase boundary
+#         if a3 == 1 and a2_next == 1:
+#           text += ' '
+#     if i<len(marks):
+#       text += unidecode(marks[i]).replace(' ','')
+#   if re.match('[A-Za-z]',text[-1]):
+#     text += '.'
+#   return text
+
+# qb_ = qb.quan_ban()
+
+
+def __Q2B__(text):
+  t_ = unicodedata.normalize('NFKC', text)
+  table = {ord(f): ord(t) for f, t in zip(
+    u'，。！？【】（）％＃＠＆１２３４５６７８９０',
+    u',.!?[]()%#@&1234567890')}
+  return t_.translate(table)
+
+def zh_hans_cleaners(text):
+  '''Basic pipeline that lowercases and collapses whitespace without transliteration.'''
+  text = lowercase(text)  # 字母转换为小写
+  text = collapse_whitespace(text)  # 去除重复空格
+  text = __Q2B__(text)  # 全角转半角
+
+  text = p.slug(text, style=p.Style.TONE3, separator=' ')
   return text
 
 
-def japanese_tokenization_cleaners(text):
-  '''Pipeline for tokenizing Japanese text.'''
-  words = []
-  for token in tokenizer.tokenize(text):
-    if token.phonetic!='*':
-      words.append(token.phonetic)
-    else:
-      words.append(token.surface)
-  text = ''
-  for word in words:
-    if re.match(_japanese_characters, word):
-      if word[0] == '\u30fc':
-        continue
-      if len(text)>0:
-        text += ' '
-      text += pyopenjtalk.g2p(word, kana=False).replace(' ','')
-    else:
-      text += unidecode(word).replace(' ','')
-  if re.match('[A-Za-z]',text[-1]):
-    text += '.'
-  return text
-
-
-def japanese_accent_cleaners(text):
-  '''Pipeline for notating accent in Japanese text.'''
-  '''Reference https://r9y9.github.io/ttslearn/latest/notebooks/ch10_Recipe-Tacotron.html'''
-  sentences = re.split(_japanese_marks, text)
-  marks = re.findall(_japanese_marks, text)
-  text = ''
-  for i, sentence in enumerate(sentences):
-    if re.match(_japanese_characters, sentence):
-      text += ':'
-      labels = pyopenjtalk.extract_fullcontext(sentence)
-      for n, label in enumerate(labels):
-        phoneme = re.search(r'\-([^\+]*)\+', label).group(1)
-        if phoneme not in ['sil','pau']:
-          text += phoneme
-        else:
-          continue
-        n_moras = int(re.search(r'/F:(\d+)_', label).group(1))
-        a1 = int(re.search(r"/A:(\-?[0-9]+)\+", label).group(1))
-        a2 = int(re.search(r"\+(\d+)\+", label).group(1))
-        a3 = int(re.search(r"\+(\d+)/", label).group(1))
-        if re.search(r'\-([^\+]*)\+', labels[n + 1]).group(1) in ['sil','pau']:
-          a2_next=-1
-        else:
-          a2_next = int(re.search(r"\+(\d+)\+", labels[n + 1]).group(1))
-        # Accent phrase boundary
-        if a3 == 1 and a2_next == 1:
-          text += ' '
-        # Falling
-        elif a1 == 0 and a2_next == a2 + 1 and a2 != n_moras:
-          text += ')'
-        # Rising
-        elif a2 == 1 and a2_next == 2:
-          text += '('
-    if i<len(marks):
-      text += unidecode(marks[i]).replace(' ','')
-  if re.match('[A-Za-z]',text[-1]):
-    text += '.'
-  return text
-
-
-def japanese_phrase_cleaners(text):
-  '''Pipeline for dividing Japanese text into phrases.'''
-  sentences = re.split(_japanese_marks, text)
-  marks = re.findall(_japanese_marks, text)
-  text = ''
-  for i, sentence in enumerate(sentences):
-    if re.match(_japanese_characters, sentence):
-      if text != '':
-        text += ' '
-      labels = pyopenjtalk.extract_fullcontext(sentence)
-      for n, label in enumerate(labels):
-        phoneme = re.search(r'\-([^\+]*)\+', label).group(1)
-        if phoneme not in ['sil','pau']:
-          text += phoneme
-        else:
-          continue
-        a3 = int(re.search(r"\+(\d+)/", label).group(1))
-        if re.search(r'\-([^\+]*)\+', labels[n + 1]).group(1) in ['sil','pau']:
-          a2_next=-1
-        else:
-          a2_next = int(re.search(r"\+(\d+)\+", labels[n + 1]).group(1))
-        # Accent phrase boundary
-        if a3 == 1 and a2_next == 1:
-          text += ' '
-    if i<len(marks):
-      text += unidecode(marks[i]).replace(' ','')
-  if re.match('[A-Za-z]',text[-1]):
-    text += '.'
-  return text
-
-
-
+# if __name__ == '__main__':
+#   text = '你好，世界。'
+#   print(zh_hans_cleaners(text))

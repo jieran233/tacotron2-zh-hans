@@ -9,7 +9,7 @@ class create_hparams():
     ################################
     epochs = 100
     iters_per_checkpoint = 500
-    seed= 1234
+    seed = 1234
     dynamic_loss_scaling = True
     fp16_run = False
     distributed_run = False
@@ -25,7 +25,7 @@ class create_hparams():
     load_mel_from_disk = False
     training_files = 'filelists/transcript_train.txt'
     validation_files = 'filelists/transcript_val.txt'
-    text_cleaners = ['japanese_cleaners']
+    text_cleaners = ['zh_hans_cleaners']
 
     ################################
     # Audio Parameters             #
