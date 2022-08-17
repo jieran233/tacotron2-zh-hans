@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="16c35713-563c-42c4-a259-ab067608f3c9" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/cleaners_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filelists/transcript_train.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/filelists/transcript_val.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hparams.py" beforeDir="false" afterPath="$PROJECT_DIR$/hparams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/text/cleaners.py" beforeDir="false" afterPath="$PROJECT_DIR$/text/cleaners.py" afterDir="false" />
-    </list>
+    <list default="true" id="16c35713-563c-42c4-a259-ab067608f3c9" name="变更" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
