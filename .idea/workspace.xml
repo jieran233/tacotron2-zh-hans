@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="16c35713-563c-42c4-a259-ab067608f3c9" name="变更" comment="" />
+    <list default="true" id="16c35713-563c-42c4-a259-ab067608f3c9" name="变更" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/tacotron2-zh-hans.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/tacotron2-zh-hans.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/colab-train-zh-cn.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/colab-train-zh-cn.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/colab.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/colab.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/distributed.py" beforeDir="false" afterPath="$PROJECT_DIR$/distributed.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hparams.py" beforeDir="false" afterPath="$PROJECT_DIR$/hparams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inference.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/inference.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiproc.py" beforeDir="false" afterPath="$PROJECT_DIR$/multiproc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stft.py" beforeDir="false" afterPath="$PROJECT_DIR$/stft.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveglow/denoiser.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveglow/denoiser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveglow/distributed.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveglow/distributed.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveglow/glow.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveglow/glow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveglow/glow_old.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveglow/glow_old.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveglow/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveglow/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/waveglow/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/waveglow/train.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

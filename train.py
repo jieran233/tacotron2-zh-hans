@@ -18,7 +18,7 @@ from data_utils import TextMelLoader, TextMelCollate
 from torch.utils.data.distributed import DistributedSampler
 
 
-device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
+device = torch.device('cpu')
 
 # 整理tensor
 def reduce_tensor(tensor, n_gpus):
@@ -29,10 +29,10 @@ def reduce_tensor(tensor, n_gpus):
 
 
 def init_distributed(hparams, n_gpus, rank, group_name):
-    #assert torch.cuda.is_available(), "Distributed mode requires CUDA."
-    if torch.cuda.is_available() :
+    #assert torch.cpu.is_available(), "Distributed mode requires CUDA."
+    if torch.cpu.is_available() :
         # Set cuda device so everything is done on the right GPU.
-        torch.cuda.set_device(rank % torch.cuda.device_count())
+        torch.cpu.set_device(rank % torch.cpu.device_count())
         # Initialize distributed communication
         dist.init_process_group(backend=hparams.dist_backend,
                                 init_method=hparams.dist_url,
@@ -173,7 +173,7 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
         init_distributed(hparams, n_gpus, rank, group_name)
 
     torch.manual_seed(hparams.seed)
-    torch.cuda.manual_seed(hparams.seed)
+    # torch.cpu.manual_seed(hparams.seed)
 
     model = load_model(hparams)
     learning_rate = hparams.learning_rate

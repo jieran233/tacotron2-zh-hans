@@ -52,7 +52,7 @@ def load_checkpoint(checkpoint_path, model, optimizer):
 def save_checkpoint(model, optimizer, learning_rate, iteration, filepath):
     print("Saving model and optimizer state at iteration {} to {}".format(
           iteration, filepath))
-    model_for_saving = WaveGlow(**waveglow_config).cuda()
+    model_for_saving = WaveGlow(**waveglow_config).cpu()
     model_for_saving.load_state_dict(model.state_dict())
     torch.save({'model': model_for_saving,
                 'iteration': iteration,
@@ -63,14 +63,14 @@ def train(num_gpus, rank, group_name, output_directory, epochs, learning_rate,
           sigma, iters_per_checkpoint, batch_size, seed, fp16_run,
           checkpoint_path, with_tensorboard):
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+    torch.cpu.manual_seed(seed)
     #=====START: ADDED FOR DISTRIBUTED======
     if num_gpus > 1:
         init_distributed(rank, num_gpus, group_name, **dist_config)
     #=====END:   ADDED FOR DISTRIBUTED======
 
     criterion = WaveGlowLoss(sigma)
-    model = WaveGlow(**waveglow_config).cuda()
+    model = WaveGlow(**waveglow_config).cpu()
 
     #=====START: ADDED FOR DISTRIBUTED======
     if num_gpus > 1:
@@ -120,8 +120,8 @@ def train(num_gpus, rank, group_name, output_directory, epochs, learning_rate,
             model.zero_grad()
 
             mel, audio = batch
-            mel = torch.autograd.Variable(mel.cuda())
-            audio = torch.autograd.Variable(audio.cuda())
+            mel = torch.autograd.Variable(mel.cpu())
+            audio = torch.autograd.Variable(audio.cpu())
             outputs = model((mel, audio))
 
             loss = criterion(outputs)
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     global waveglow_config
     waveglow_config = config["waveglow_config"]
 
-    num_gpus = torch.cuda.device_count()
+    num_gpus = torch.cpu.device_count()
     if num_gpus > 1:
         if args.group_name == '':
             print("WARNING: Multiple GPUs detected but no distributed group set")

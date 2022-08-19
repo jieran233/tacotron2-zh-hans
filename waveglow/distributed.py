@@ -41,11 +41,11 @@ def reduce_tensor(tensor, num_gpus):
     return rt
 
 def init_distributed(rank, num_gpus, group_name, dist_backend, dist_url):
-    assert torch.cuda.is_available(), "Distributed mode requires CUDA."
+    assert torch.cpu.is_available(), "Distributed mode requires CUDA."
     print("Initializing Distributed")
 
     # Set cuda device so everything is done on the right GPU.
-    torch.cuda.set_device(rank % torch.cuda.device_count())
+    torch.cpu.set_device(rank % torch.cpu.device_count())
 
     # Initialize distributed communication
     dist.init_process_group(dist_backend, init_method=dist_url,
@@ -113,7 +113,7 @@ def apply_gradient_allreduce(module):
                         buckets[tp] = []
                     buckets[tp].append(param)
             if module.warn_on_half:
-                if torch.cuda.HalfTensor in buckets:
+                if torch.cpu.HalfTensor in buckets:
                     print("WARNING: gloo dist backend for half parameters may be extremely slow." +
                           " It is recommended to use the NCCL backend in this case. This currently requires" +
                           "PyTorch built from top of tree master.")
@@ -148,7 +148,7 @@ def main(config, stdout_dir, args_str):
 
     args_list.append('--config={}'.format(config))
 
-    num_gpus = torch.cuda.device_count()
+    num_gpus = torch.cpu.device_count()
     args_list.append('--num_gpus={}'.format(num_gpus))
     args_list.append("--group_name=group_{}".format(time.strftime("%Y_%m_%d-%H%M%S")))
 

@@ -4,7 +4,7 @@ import sys
 import subprocess
 
 argslist = list(sys.argv)[1:]
-num_gpus = torch.cuda.device_count()
+num_gpus = torch.cpu.device_count()
 argslist.append('--n_gpus={}'.format(num_gpus))
 workers = []
 job_id = time.strftime("%Y_%m_%d-%H%M%S")

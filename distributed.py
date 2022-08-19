@@ -76,7 +76,7 @@ class DistributedDataParallel(Module):
                             buckets[tp] = []
                         buckets[tp].append(param)
                 if self.warn_on_half:
-                    if torch.cuda.HalfTensor in buckets:
+                    if torch.cpu.HalfTensor in buckets:
                         print("WARNING: gloo dist backend for half parameters may be extremely slow." +
                               " It is recommended to use the NCCL backend in this case. This currently requires" +
                               "PyTorch built from top of tree master.")
@@ -145,7 +145,7 @@ def apply_gradient_allreduce(module):
                             buckets[tp] = []
                         buckets[tp].append(param)
                 if module.warn_on_half:
-                    if torch.cuda.HalfTensor in buckets:
+                    if torch.cpu.HalfTensor in buckets:
                         print("WARNING: gloo dist backend for half parameters may be extremely slow." +
                               " It is recommended to use the NCCL backend in this case. This currently requires" +
                               "PyTorch built from top of tree master.")
