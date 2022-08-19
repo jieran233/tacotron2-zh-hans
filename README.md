@@ -1,84 +1,106 @@
-# tacotron2-zh-hans
+# tacotron2-zh-hans (CPU training version)
+
+http://download.pytorch.org/whl/cpu/torch/
 
 ## How to use
 
 (For reference only, it is sorry I can't guarantee that following this step you will get it out of the box.)
 
-- clone this repo
+- Clone this repo
   
   - ```
     git clone https://github.com/jieran233/tacotron2-zh-hans
     ```
 
-- create conda environment, and install dependencies in it.
+- Create conda environment, and install dependencies in it.
   
   - ```
-    conda create -n tacotron2 python=3.7
-    conda activate tacotron2
+    conda create -n tacotron2-cpu python=3.7
+    conda activate tacotron2-cpu
     ```
-  
-  - ```
-    # Pytorch with CUDA toolkit 11.3
-    # Choose the version of CUDA toolkit that suits you
-    conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
-    # Or use that command (It may download slowly)
-    # pip3 install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+    
     ```
-  
-  - ```
-    # TensorFlow-GPU 1.15
-    pip3 install tensorflow-gpu~=1.15
+    # Download PyTorch CPU wheel from:
+    # http://download.pytorch.org/whl/cpu/torch/
+    
+    # Linux http://download.pytorch.org/whl/cpu/torch-1.12.1%2Bcpu-cp37-cp37m-linux_x86_64.whl
+    
+    # Windows http://download.pytorch.org/whl/cpu/torch-1.12.1%2Bcpu-cp37-cp37m-win_amd64.whl
+    
+    # macOS(arm64) http://download.pytorch.org/whl/cpu/torch-1.12.1-cp37-none-macosx_11_0_arm64.whl
+    # macOS(x86_64) http://download.pytorch.org/whl/cpu/torch-1.12.1-cp37-none-macosx_10_9_x86_64.whl
+    
+    # Install wheel
+    pip3 install ./torch-*.whl
     ```
-  
-  - ```
+    
+    ```
     # cd to this repo that you cloned just now
     cd tacotron2-zh-hans
-    # Install others dependencies
+    # Install dependencies (tensorflow-cpu~=1.15.0 are included)
     pip3 install -r requirements.txt
     ```
 
--  Modify config before training
+- MKL or OpenBLAS?
+  
+  - MKL (more suitable for Intel CPU)
+    
+    See [reference article](https://www.autodl.com/docs/perf/#numpy).
+  
+  - OpenBLAS (more suitable for AMD CPU)
+    
+    See [Tutorial for installing numpy with OpenBLAS on Windows - Stack Overflow](https://stackoverflow.com/a/67954011/16719590)
+    
+    ```bash
+    #!/bin/bash
+    conda install conda-forge::blas=*=openblas -y
+    conda install -c conda-forge numpy -y
+    ```
+
+- Prepare your dataset and pertrained model.
+
+- Modify config before training
   
   - File ./hparams.py line 10, 11
     
     Change the values to what you want.
     
     ```python
-        epochs = 100
+        epochs = 1000
         iters_per_checkpoint = 500
     ```
   
   - File ./hparams.py line 81
     
-    Decrease the batch_size to 32 or lower.
+    Decrease the batch_size to 32 or lower. (16 is recommended)
     
-    If VideoRAM BOMB(CUDA out of memory) again, decrease the value of batch_size again.
+    If VideoRAM BOMB(out of memory) again, decrease the value of batch_size again.
     
     ```
-        batch_size = 64
+        batch_size = 16
     ```
 
 - Start training without pretraint model
   
   ```
-  python3 train.py --output_directory=/root/autodl-nas/output/ckpt --log_directory=/root/autodl-nas/output/log
+  python3 train.py --output_directory=./output/ckpt --log_directory=./output/log
   ```
-
-- Or continue an unfinished work:
   
-  Start training with pretraint model
-  
-  ```
-  python3 train.py -c checkpoint.pt --output_directory=/root/autodl-nas/output/ckpt --log_directory=/root/autodl-nas/output/log
-  ```
+  - Or continue an unfinished work:
+    
+    Start training with pretraint model
+    
+    ```
+    python3 train.py -c ckpt.pt --output_directory=./output/ckpt --log_directory=./output/log
+    ```
 
 ## Cleaners
 
 (File ./hparams.py line 30)
 
- 'zh_hans_cleaners' (Currently only this one)
+'zh_hans_cleaners' (Currently only this one)
 
-- Before: 
+- Before:
   
   ```bash
   # cd tacotron2
@@ -87,7 +109,7 @@
   (tacotron2) [tacotron2-zh-hans]$ python3 cleaners_test.py "CUDA（Compute Unified Device Architecture，统一计算架构[1]）是由英伟达NVIDIA所推出的一种集成技术，是该公司IA的GPU进行图像处理之外的运算，亦是首次可以利用GPU作为C-编译器的开发环境。"
   ```
 
-- After: 
+- After:
   
   ```
   cuda(compute unified device architecture, tong3 yi1 ji4 suan4 jia4 gou4 [1]) shi4 you2 ying1 wei3 da2 nvidia suo3 tui1 chu1 de yi1 zhong3 ji2 cheng2 ji4 shu4 , shi4 gai1 gong1 si1 dui4 yu2 gpgpu de zheng4 shi4 ming2 cheng1 . tou4 guo4 zhe4 ge4 ji4 shu4 , yong4 hu4 ke3 li4 yong4 nvidia de gpu jin4 xing2 tu2 xiang4 chu3 li3 zhi1 wai4 de yun4 suan4 , yi4 shi4 shou3 ci4 ke3 yi3 li4 yong4 gpu zuo4 wei2 c- bian1 yi4 qi4 de kai1 fa1 huan2 jing4 .
@@ -165,23 +187,31 @@ sequence = np.array(text_to_sequence(text, ['japanese_cleaners']))[None, :]
 #### Ayachi Nene
 
 * [Model 1](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/ESltqOvyK3ZPsLMQwpv5FH0BoX8slLVsz3eUKwHHKkg9ww?e=vc5fdd) ['japanese_cleaners']
+
 * [Model 2](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/ETNLDYH_ZRpMmNR0VGALhNQB5-LiJOqTaWQz8tXtbvCV-g?e=7nf2Ec) ['japanese_tokenization_cleaners']
+
 * [Model 3](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/Eb0WROtOsYBInTmQQZHf36IBSXmyVd4JiCF7OnQjOZkjGg?e=qbbsv4) ['japanese_accent_cleaners']
   
   #### Inaba Meguru
+
 * [Model 1](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/Ed29Owd-E1NKstl_EFGZFVABe-F-a65jSAefeW_uEQuWxw?e=J628nT) ['japanese_tokenization_cleaners']
+
 * [Model 2](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/ER8C2tiu4-RPi_MtQ3TCuTkBVRvO1MgJOPAKpAUD4ZLiow?e=ktT81t) ['japanese_tokenization_cleaners']
   
   ### Senren Banka
   
   #### Tomotake Yoshino
+
 * [Model 1](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/EdfFetSH3tpMr7nkiqAKzwEBXjuCRICcvgUortEvE4pdjw?e=UyvkyI) ['japanese_tokenization_cleaners']
+
 * [Model 2](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/EeE4h5teC5xKms1VRnaNiW8BuqslFeR8VW7bCk7SWh2r8w?e=qADqbu) ['japanese_phrase_cleaners']
   
   #### Murasame
+
 * [Model 1](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/EVXUY5tNA4JOqsVL7of8GrEB4WFPrcZPRWX0MP_7G0RXfg?e=5wzBlw) ['japanese_accent_cleaners']
   
   ### RIDDLE JOKER
   
   #### Arihara Nanami
+
 * [Model 1](https://sjtueducn-my.sharepoint.com/:u:/g/personal/cjang_cjengh_sjtu_edu_cn/EdxWxcjx5XdAncOdoTjtyK0BUvrigdcBb2LPmzL48q4smw?e=OlAU66) ['japanese_accent_cleaners']

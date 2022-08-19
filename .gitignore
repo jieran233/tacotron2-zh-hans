@@ -373,3 +373,5 @@ FodyWeavers.xsd
 # jupyter cache
 /.ipynb_checkpoints
 
+
+wav/*
