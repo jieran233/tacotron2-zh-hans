@@ -373,6 +373,3 @@ FodyWeavers.xsd
 # jupyter cache
 /.ipynb_checkpoints
 
-
-.idea/
-text.bak/
