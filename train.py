@@ -283,6 +283,17 @@ if __name__ == '__main__':
     print("cuDNN Enabled:", hparams.cudnn_enabled)
     print("cuDNN Benchmark:", hparams.cudnn_benchmark)
 
+    # siblings = int(os.system("bash -c \"grep -c '^processor' /proc/cpuinfo\""))  # https://stackoverflow.com/a/6481016
+    siblings = os.cpu_count()
+    torch.set_num_threads(siblings)
+    torch.set_num_interop_threads(siblings)
+
+    print()
+    print("CPU count:", siblings)
+    print("num_threads:", torch.get_num_threads())
+    print("num_interop_threads:", torch.get_num_interop_threads())
+    print()
+
     train(args.output_directory,
           args.log_directory,
           args.checkpoint_path,
