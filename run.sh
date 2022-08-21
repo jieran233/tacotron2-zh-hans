@@ -4,4 +4,5 @@ siblings=$(grep -c '^processor' /proc/cpuinfo)  # https://stackoverflow.com/a/64
 export OMP_NUM_THREADS=$siblings
 export MKL_NUM_THREADS=$siblings
 export OPENBLAS_NUM_THREADS=$siblings
+
 python3 train.py -c ckpt.pt --output_directory=./output --log_directory=./log
