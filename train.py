@@ -1,6 +1,7 @@
 import os
 import time
 import math
+from tkinter import E
 import torch
 import argparse
 import torch.distributed as dist
@@ -244,6 +245,20 @@ def train(output_directory, log_directory, checkpoint_path, warm_start, n_gpus,
                          hparams.batch_size, n_gpus, collate_fn, logger,
                          hparams.distributed_run, rank)
                 if rank == 0:
+                    # Delete old checkpoints
+                    remain_of_ckpts = 2
+                    listdir = os.listdir(output_directory)
+                    ckpts = list(filter(lambda x:'checkpoint_' in x, listdir))  # https://stackoverflow.com/a/12845341
+                    ckpts.sort()
+                    del_ckpts = ckpts[:-(remain_of_ckpts-1)]
+                    for i in del_ckpts:
+                        ckpt = os.path.join(output_directory, i)
+                        print('Deleting ' + ckpt)
+                        try:
+                            os.remove(ckpt)
+                        except Exception as e:
+                            print(e.args)
+
                     checkpoint_path = os.path.join(
                         output_directory, "checkpoint_{}".format(iteration))
                     save_checkpoint(model, optimizer, learning_rate, iteration,
