@@ -10,14 +10,12 @@ http://download.pytorch.org/whl/cpu/torch/
   
   - ```
     git clone https://github.com/jieran233/tacotron2-zh-hans
-    cd tacotron2-zh-hans
-    git checkout CPU
     ```
-  
+
 - Create conda environment, and install dependencies in it.
   
   - ```
-    conda create -n tacotron2-cpu python=3.7
+    conda create -n tacotron2-cpu python=3.7 -y
     conda activate tacotron2-cpu
     ```
     
@@ -55,10 +53,63 @@ http://download.pytorch.org/whl/cpu/torch/
     
     ```bash
     #!/bin/bash
-    conda install conda-forge::blas=*=openblas -y
+    conda install conda-forge::"blas=*=openblas" -y
     conda install -c conda-forge numpy -y
     ```
-
+  
+  - > [AMD CPU究竟可以不可以用MKL?教你用最好的配置加速numpy/sklearn/tensorflow - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/364051698)
+    > 
+    > ## 环境
+    > 
+    > MKL的环境我们用如下Anaconda指令来装：
+    > 
+    > ```text
+    > $ conda create -n py38mkl python=3.8 && conda activate py38mkl
+    > $ conda install numpy "blas=*=mkl"
+    > $ conda install -c pytorch pytorch
+    > $ conda install -c anaconda tensorflow-mkl
+    > ```
+    > 
+    > OpenBLAS的环境我们用如下Anaconda指令来装：
+    > 
+    > ```text
+    > $ conda create -n py38nomkl python=3.8 && conda activate py38nomkl
+    > $ conda install nomkl
+    > $ conda install numpy "blas=*=openblas"
+    > $ pip install tensorflow
+    > ```
+    
+    ```
+    # mkl with debug
+    conda create -n py37mkl-base python=3.7 -y && conda activate py37mkl-base
+    conda install numpy "blas=*=mkl" -y
+    
+    # pytorch
+    conda install -c pytorch pytorch -y
+    # tensorflow
+    conda install -c anaconda tensorflow-mkl -y
+    
+    conda install mkl=2020.0 intel-openmp=2020.0 -y
+    ```
+    
+    ```
+    conda create -n tacotron2-cpu --clone py37mkl-base -y
+    conda activate tacotron2-cpu
+    pip install -r requirements.txt
+    
+    # 这样安装下来虽然依赖关系会出问题但似乎不影响使用
+    """
+    ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+    tensorflow 2.3.0 requires gast==0.3.3, but you have gast 0.2.2 which is incompatible.
+    tensorflow 2.3.0 requires numpy<1.19.0,>=1.16.0, but you have numpy 1.19.2 which is incompatible.
+    tensorflow 2.3.0 requires scipy==1.4.1, but you have scipy 1.6.2 which is incompatible.
+    tensorflow 2.3.0 requires tensorboard<3,>=2.3.0, but you have tensorboard 1.15.0 which is incompatible.
+    tensorflow 2.3.0 requires tensorflow-estimator<2.4.0,>=2.3.0, but you have tensorflow-estimator 2.6.0 which is incompatible.
+    
+    Successfully installed appdirs-1.4.4 audioread-3.0.0 cycler-0.11.0 decorator-5.1.1 gast-0.2.2 inflect-5.6.2 janome-0.4.2 joblib-1.1.0 kiwisolver-1.4.4 librosa-0.8.0 llvmlite-0.39.0 matplotlib-3.0.3 numba-0.56.0 packaging-21.0 pillow-9.1.1 pooch-1.6.0 protobuf-3.20.1 pyparsing-3.0.9 pypinyin-0.47.0 pysoundfile-0.9.0.post1 python-dateutil-2.8.1 resampy-0.4.0 scikit-learn-1.0.2 soundfile-0.10.3.post1 tensorboard-1.15.0 tensorflow-cpu-1.15.0 tensorflow-cpu-estimator-1.15.1 threadpoolctl-3.1.0 unidecode-1.3.4
+    """
+    ```
+  
 - Prepare your dataset and pertrained model.
 
 - Modify config before training
@@ -116,70 +167,6 @@ http://download.pytorch.org/whl/cpu/torch/
   ```
   cuda(compute unified device architecture, tong3 yi1 ji4 suan4 jia4 gou4 [1]) shi4 you2 ying1 wei3 da2 nvidia suo3 tui1 chu1 de yi1 zhong3 ji2 cheng2 ji4 shu4 , shi4 gai1 gong1 si1 dui4 yu2 gpgpu de zheng4 shi4 ming2 cheng1 . tou4 guo4 zhe4 ge4 ji4 shu4 , yong4 hu4 ke3 li4 yong4 nvidia de gpu jin4 xing2 tu2 xiang4 chu3 li3 zhi1 wai4 de yun4 suan4 , yi4 shi4 shou3 ci4 ke3 yi3 li4 yong4 gpu zuo4 wei2 c- bian1 yi4 qi4 de kai1 fa1 huan2 jing4 .
   ```
-
-<hr/>
-
-## Training on linux-aarch64 (testing)
-
-for example: `Ubuntu 18.04 LTS [running via Linux Deploy]`
-
-```
-sudo apt install wget git
-
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh
-chmod +x Miniconda3-latest-Linux-aarch64.sh
-./Miniconda3-latest-Linux-aarch64.sh
-
-conda create -n tacotron2-cpu python=3.7 -y
-conda activate tacotron2-cpu
-
-wget http://download.pytorch.org/whl/torch-1.12.1-cp37-cp37m-manylinux2014_aarch64.whl
-pip3 install torch-1.12.1-cp37-cp37m-manylinux2014_aarch64.whl
-
-wget https://github.com/KumaTea/tensorflow-aarch64/releases/download/v1.15/tensorflow-1.15.5-cp37-cp37m-manylinux_2_24_aarch64.whl
-sudo apt install python3-h5py make automake gcc g++ subversion python3-dev pkg-config libhdf5-dev
-pip3 install tensorflow-1.15.5-cp37-cp37m-manylinux_2_24_aarch64.whl
-
-git clone https://github.com/jieran233/tacotron2-zh-hans
-cd tacotron2-zh-hans
-git checkout CPU
-
-# download your dataset
-wget https://221-206-125-10.d.123pan.cn:30443/123-847/241ac029/1812443978-0/241ac029b3eba0d1a831c52a6ae5eb4f?v=3&t=1661952511&s=bf07d6f5a3312b4520e28ec116e59f52&i=a8706a7&filename=wenzhi-tricolourlovestory.tar.gz&d=49ac3ed8
-mv "241ac029b3eba0d1a831c52a6ae5eb4f?v=3&t=1661952511&s=bf07d6f5a3312b4520e28ec116e59f52&i=a8706a7&filename=wenzhi-tricolourlovestory.tar.gz&d=49ac3ed8" wenzhi-tricolourlovestory.tar.gz
-tar -xzvf wenzhi-tricolourlovestory.tar.gz
-
-sudo apt install nano
-nano requirements.txt
-#tensorflow-cpu~=1.15.0
-
-sudo apt install libfreetype6-dev libpng-dev pkg-config
-pip3 install -r requirements.txt
-
-git clone https://github.com/libsndfile/libsndfile.git
-sudo apt install autoconf autogen automake build-essential libasound2-dev \
-  libflac-dev libogg-dev libtool libvorbis-dev libopus-dev libmp3lame-dev \
-  libmpg123-dev pkg-config python
-cd libsndfile
-./autogen.sh
-./configure --enable-werror
-make
-sudo make install
-
-sudo ln -s /usr/local/lib/libsndfile.la /lib
-sudo ln -s /usr/local/lib/libsndfile.so /lib
-sudo ln -s /usr/local/lib/libsndfile.so.1 /lib
-sudo ln -s /usr/local/lib/libsndfile.so.1.0.34 /lib
-
-# https://github.com/scipy/scipy/issues/14541
-pip3 uninstall numpy
-pip3 install numpy
-
-chmod +x *.sh
-./run.sh
-```
-
-
 
 ---
 
