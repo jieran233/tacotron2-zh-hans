@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# export MKL_DEBUG_CPU_TYPE=5
+export MKL_DEBUG_CPU_TYPE=5
 
 siblings=$(grep -c '^processor' /proc/cpuinfo)  # https://stackoverflow.com/a/6481016
 export OMP_NUM_THREADS=$siblings

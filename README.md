@@ -167,6 +167,56 @@ http://download.pytorch.org/whl/cpu/torch/
   ```
   cuda(compute unified device architecture, tong3 yi1 ji4 suan4 jia4 gou4 [1]) shi4 you2 ying1 wei3 da2 nvidia suo3 tui1 chu1 de yi1 zhong3 ji2 cheng2 ji4 shu4 , shi4 gai1 gong1 si1 dui4 yu2 gpgpu de zheng4 shi4 ming2 cheng1 . tou4 guo4 zhe4 ge4 ji4 shu4 , yong4 hu4 ke3 li4 yong4 nvidia de gpu jin4 xing2 tu2 xiang4 chu3 li3 zhi1 wai4 de yun4 suan4 , yi4 shi4 shou3 ci4 ke3 yi3 li4 yong4 gpu zuo4 wei2 c- bian1 yi4 qi4 de kai1 fa1 huan2 jing4 .
   ```
+<hr/>
+
+## Training on linux-aarch64 (testing)
+
+for example: `Ubuntu 18.04 LTS [running via Linux Deploy]`
+
+```
+sudo apt install wget git
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh
+chmod +x Miniconda3-latest-Linux-aarch64.sh
+./Miniconda3-latest-Linux-aarch64.sh
+conda create -n tacotron2-cpu python=3.7 -y
+conda activate tacotron2-cpu
+wget http://download.pytorch.org/whl/torch-1.12.1-cp37-cp37m-manylinux2014_aarch64.whl
+pip3 install torch-1.12.1-cp37-cp37m-manylinux2014_aarch64.whl
+wget https://github.com/KumaTea/tensorflow-aarch64/releases/download/v1.15/tensorflow-1.15.5-cp37-cp37m-manylinux_2_24_aarch64.whl
+sudo apt install python3-h5py make automake gcc g++ subversion python3-dev pkg-config libhdf5-dev
+pip3 install tensorflow-1.15.5-cp37-cp37m-manylinux_2_24_aarch64.whl
+git clone https://github.com/jieran233/tacotron2-zh-hans
+cd tacotron2-zh-hans
+git checkout CPU
+# download your dataset
+wget https://221-206-125-10.d.123pan.cn:30443/123-847/241ac029/1812443978-0/241ac029b3eba0d1a831c52a6ae5eb4f?v=3&t=1661952511&s=bf07d6f5a3312b4520e28ec116e59f52&i=a8706a7&filename=wenzhi-tricolourlovestory.tar.gz&d=49ac3ed8
+mv "241ac029b3eba0d1a831c52a6ae5eb4f?v=3&t=1661952511&s=bf07d6f5a3312b4520e28ec116e59f52&i=a8706a7&filename=wenzhi-tricolourlovestory.tar.gz&d=49ac3ed8" wenzhi-tricolourlovestory.tar.gz
+tar -xzvf wenzhi-tricolourlovestory.tar.gz
+sudo apt install nano
+nano requirements.txt
+#tensorflow-cpu~=1.15.0
+sudo apt install libfreetype6-dev libpng-dev pkg-config
+pip3 install -r requirements.txt
+git clone https://github.com/libsndfile/libsndfile.git
+sudo apt install autoconf autogen automake build-essential libasound2-dev \
+  libflac-dev libogg-dev libtool libvorbis-dev libopus-dev libmp3lame-dev \
+  libmpg123-dev pkg-config python
+cd libsndfile
+./autogen.sh
+./configure --enable-werror
+make
+sudo make install
+sudo ln -s /usr/local/lib/libsndfile.la /lib
+sudo ln -s /usr/local/lib/libsndfile.so /lib
+sudo ln -s /usr/local/lib/libsndfile.so.1 /lib
+sudo ln -s /usr/local/lib/libsndfile.so.1.0.34 /lib
+# https://github.com/scipy/scipy/issues/14541
+pip3 uninstall numpy
+pip3 install numpy
+chmod +x *.sh
+./run.sh
+```
+
 
 ---
 
